@@ -1,0 +1,6 @@
+#!/usr/bin/env python3
+"""Call lddwrap main."""
+import lddwrap.main
+
+if __name__ == "__main__":
+    lddwrap.main.main()
