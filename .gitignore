@@ -1,0 +1,16 @@
+venv3
+venv
+venv-doc
+.mypy_cache/
+.idea
+*.pyc
+.precommit_hashes
+*.egg-info
+.tox
+.coverage
+.eggs
+dist/
+build/
+
+# Sphinx documentation
+docs/build/
