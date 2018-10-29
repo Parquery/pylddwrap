@@ -52,7 +52,9 @@ setup(
             'tox>=3.0.0',
             'coverage>=4.5.1,<5',
             'pydocstyle>=3.0.0,<4',
-            'pyicontract-lint>=2.0.0,<3'
+            'pyicontract-lint>=2.0.0,<3',
+            'docutils>=0.14,<1',
+            'pygments>=2.2.0,<3'
             # yapf: enable
         ]
     },

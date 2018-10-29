@@ -82,6 +82,10 @@ def main() -> int:
     for pth in (repo_root / "lddwrap").glob("**/*.py"):
         subprocess.check_call(["pyicontract-lint", pth.as_posix()])
 
+    print("Checking the restructured text of the readme...")
+    subprocess.check_call(
+        ['python3', 'setup.py', 'check', '--restructuredtext', '--strict'])
+
     return 0
 
 
