@@ -8,9 +8,9 @@ pylddwrap
     :target: https://coveralls.io/github/Parquery/pylddwrap?branch=master
     :alt: Coverage
 
-.. image:: https://badges.frapsoft.com/os/mit/mit.svg?v=10
-    :target: https://github.com/ellerbrock/open-source-badge/
-    :alt: License
+.. image:: https://badges.frapsoft.com/os/mit/mit.png?v=103
+    :target: https://opensource.org/licenses/mit-license.php
+    :alt: MIT License
 
 .. image:: https://badge.fury.io/py/pylddwrap.svg
     :target: https://badge.fury.io/py/pylddwrap
