@@ -1,16 +1,27 @@
 pylddwrap
 =========
-.. image:: https://travis-ci.com/Parquery/lddwrap.svg?branch=master
-    :target: https://travis-ci.com/Parquery/lddwrap.svg?branch=master
+.. image:: https://travis-ci.com/Parquery/pylddwrap.svg?branch=master
+    :target: https://travis-ci.com/Parquery/pylddwrap.svg?branch=master
     :alt: Build Status
 
-.. image:: https://coveralls.io/repos/github/Parquery/lddwrap/badge.svg?branch=master
-    :target: https://coveralls.io/github/Parquery/lddwrap?branch=master
+.. image:: https://coveralls.io/repos/github/Parquery/pylddwrap/badge.svg?branch=master
+    :target: https://coveralls.io/github/Parquery/pylddwrap?branch=master
     :alt: Coverage
 
 .. image:: https://badges.frapsoft.com/os/mit/mit.svg?v=10
     :target: https://github.com/ellerbrock/open-source-badge/
-    :alt: Coverage
+    :alt: License
+
+.. image:: https://badge.fury.io/py/pylddwrap.svg
+    :target: https://badge.fury.io/py/pylddwrap
+    :alt: PyPI - version
+
+.. image:: https://img.shields.io/pypi/pyversions/pylddwrap.svg
+    :alt: PyPI - Python Version
+
+.. image:: https://readthedocs.org/projects/pylddwrap/badge/?version=latest
+    :target: https://pylddwrap.readthedocs.io/en/latest/?badge=latest
+    :alt: Documentation Status
 
 Pylddwrap wraps ldd \*nix utility to determine shared libraries required by a program.
 

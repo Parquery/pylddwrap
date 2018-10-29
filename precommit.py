@@ -44,7 +44,7 @@ def main() -> int:
     print("Isort'ing...")
     if overwrite:
         subprocess.check_call([
-            "isort", "--recursive", "--recursive", "tests", "lddwrap",
+            "isort", "--recursive", "tests", "lddwrap",
             "bin/pylddwrap"], cwd=repo_root.as_posix())
     else:
         subprocess.check_call([
@@ -81,6 +81,10 @@ def main() -> int:
     print("pyicontract-lint'ing...")
     for pth in (repo_root / "lddwrap").glob("**/*.py"):
         subprocess.check_call(["pyicontract-lint", pth.as_posix()])
+
+    print("Checking the restructured text of the readme...")
+    subprocess.check_call(
+        ['python3', 'setup.py', 'check', '--restructuredtext', '--strict'])
 
     return 0
 
