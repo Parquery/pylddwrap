@@ -44,7 +44,7 @@ def main() -> int:
     print("Isort'ing...")
     if overwrite:
         subprocess.check_call([
-            "isort", "--recursive", "--recursive", "tests", "lddwrap",
+            "isort", "--recursive", "tests", "lddwrap",
             "bin/pylddwrap"], cwd=repo_root.as_posix())
     else:
         subprocess.check_call([
