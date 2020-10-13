@@ -2,9 +2,8 @@ language: python
 python:
   - "3.5"
   - "3.6"
-addons:
-  apt:
-    packages:
+  - "3.7"
+  - "3.8"
 install:
   - pip3 install -e .[dev]
   - pip3 install coveralls

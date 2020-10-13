@@ -30,35 +30,35 @@ def main() -> int:
         subprocess.check_call([
             "yapf", "--in-place", "--style=style.yapf", "--recursive", "tests",
             "lddwrap", "setup.py", "precommit.py", "bin/pylddwrap"
-        ], cwd=repo_root.as_posix())
+        ], cwd=str(repo_root))
     else:
         subprocess.check_call([
             "yapf", "--diff", "--style=style.yapf", "--recursive", "tests",
             "lddwrap", "setup.py", "precommit.py", "bin/pylddwrap"
-        ], cwd=repo_root.as_posix())
+        ], cwd=str(repo_root))
 
     print("Mypy'ing...")
     subprocess.check_call(["mypy", "lddwrap", "tests", "bin/pylddwrap"],
-                          cwd=repo_root.as_posix())
+                          cwd=str(repo_root))
 
     print("Isort'ing...")
     if overwrite:
         subprocess.check_call([
             "isort", "--recursive", "tests", "lddwrap",
-            "bin/pylddwrap"], cwd=repo_root.as_posix())
+            "bin/pylddwrap"], cwd=str(repo_root))
     else:
         subprocess.check_call([
             "isort", "--check-only", "--recursive", "tests", "lddwrap",
-            "bin/pylddwrap"], cwd=repo_root.as_posix())
+            "bin/pylddwrap"], cwd=str(repo_root))
 
     print("Pylint'ing...")
     subprocess.check_call(
         ["pylint", "--rcfile=pylint.rc", "tests", "lddwrap", "bin/pylddwrap"],
-        cwd=repo_root.as_posix())
+        cwd=str(repo_root))
 
     print("Pydocstyle'ing...")
     subprocess.check_call(["pydocstyle", "lddwrap", "bin/pylddwrap"],
-                          cwd=repo_root.as_posix())
+                          cwd=str(repo_root))
 
     print("Testing...")
     env = os.environ.copy()
@@ -67,20 +67,21 @@ def main() -> int:
     subprocess.check_call([
         "coverage", "run", "--source", "lddwrap", "-m", "unittest", "discover",
         "tests"
-    ], cwd=repo_root.as_posix())
+    ], cwd=str(repo_root))
 
     subprocess.check_call(["coverage", "report"])
 
     # yapf: enable
     print("Doctesting...")
     subprocess.check_call(
-        ["python3", "-m", "doctest", (repo_root / "README.rst").as_posix()])
+        [sys.executable, "-m", "doctest",
+         str(repo_root / "README.rst")])
     for pth in (repo_root / "lddwrap").glob("**/*.py"):
-        subprocess.check_call(["python3", "-m", "doctest", pth.as_posix()])
+        subprocess.check_call([sys.executable, "-m", "doctest", str(pth)])
 
     print("pyicontract-lint'ing...")
     for pth in (repo_root / "lddwrap").glob("**/*.py"):
-        subprocess.check_call(["pyicontract-lint", pth.as_posix()])
+        subprocess.check_call(["pyicontract-lint", str(pth)])
 
     print("Checking the restructured text of the readme...")
     subprocess.check_call(
