@@ -48,8 +48,8 @@ setup(
     extras_require={
         'dev': [
             # yapf: disable
-            'mypy==0.641',
-            'pylint==2.1.1',
+            'mypy==0.790',
+            'pylint==2.6.0',
             'yapf==0.24.0',
             'tox>=3.0.0',
             'coverage>=4.5.1,<5',
