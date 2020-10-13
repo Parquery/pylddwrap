@@ -30,15 +30,17 @@ setup(
     url=pylddwrap_meta.__url__,
     author=pylddwrap_meta.__author__,
     author_email=pylddwrap_meta.__author_email__,
+    # yapf: disable
     classifiers=[
-        # yapf: disable
         'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python :: 3.5',
-        'Programming Language :: Python :: 3.6'
-        # yapf: enable
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8'
     ],
+    # yapf: enable
     license='License :: OSI Approved :: MIT License',
     keywords='ldd dependency dependencies lddwrap pylddwrap',
     packages=find_packages(exclude=['tests']),
