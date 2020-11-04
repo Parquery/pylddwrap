@@ -288,6 +288,8 @@ def _format_table(table: List[List[str]]) -> str:
     :param table: rows of cells
     :return: table as string
     """
+    head, tail = table[0], table[1:]
+    table = [head] + sorted(tail, key=lambda x: x[0] if "None" == x[0] else str.casefold(x[0]))
     cols = len(table[0])
 
     col_widths = [max(len(row[i]) for row in table) for i in range(cols)]
