@@ -56,15 +56,15 @@ Command-Line Tool pylddwrap
 
 .. code-block:: text
 
-    soname          | path                                  | found | mem_address          | unused
-    ----------------+---------------------------------------+-------+----------------------+-------
-    linux-vdso.so.1 | None                                  | True  | (0x00007ffd8750f000) | False
-    libselinux.so.1 | /lib/x86_64-linux-gnu/libselinux.so.1 | True  | (0x00007f4e73dc3000) | True
-    libc.so.6       | /lib/x86_64-linux-gnu/libc.so.6       | True  | (0x00007f4e739f9000) | False
-    libpcre.so.3    | /lib/x86_64-linux-gnu/libpcre.so.3    | True  | (0x00007f4e73789000) | False
-    libdl.so.2      | /lib/x86_64-linux-gnu/libdl.so.2      | True  | (0x00007f4e73585000) | False
-    None            | /lib64/ld-linux-x86-64.so.2           | True  | (0x00007f4e73fe5000) | False
-    libpthread.so.0 | /lib/x86_64-linux-gnu/libpthread.so.0 | True  | (0x00007f4e73368000) | False
+    soname          | path                                  | found | mem_address        | unused
+    ----------------+---------------------------------------+-------+--------------------+-------
+    linux-vdso.so.1 | None                                  | True  | 0x00007ffd8750f000 | False
+    libselinux.so.1 | /lib/x86_64-linux-gnu/libselinux.so.1 | True  | 0x00007f4e73dc3000 | True
+    libc.so.6       | /lib/x86_64-linux-gnu/libc.so.6       | True  | 0x00007f4e739f9000 | False
+    libpcre.so.3    | /lib/x86_64-linux-gnu/libpcre.so.3    | True  | 0x00007f4e73789000 | False
+    libdl.so.2      | /lib/x86_64-linux-gnu/libdl.so.2      | True  | 0x00007f4e73585000 | False
+    None            | /lib64/ld-linux-x86-64.so.2           | True  | 0x00007f4e73fe5000 | False
+    libpthread.so.0 | /lib/x86_64-linux-gnu/libpthread.so.0 | True  | 0x00007f4e73368000 | False
 
 
 * To obtain the dependencies as JSON, invoke:
@@ -82,7 +82,7 @@ Command-Line Tool pylddwrap
       "soname": "linux-vdso.so.1",
       "path": "None",
       "found": true,
-      "mem_address": "(0x00007ffed857f000)",
+      "mem_address": "0x00007ffed857f000",
       "unused": false
     },
     ...
