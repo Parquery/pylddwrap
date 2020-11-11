@@ -19,6 +19,7 @@ class Args:
         """Initialize with arguments parsed with ``argparse``."""
         self.format = str(args.format)
         self.path = pathlib.Path(args.path)
+        self.sort_by = (None if args.sort_by is None else str(args.sort_by))
 
 
 def parse_args(sys_argv: List[str]) -> Args:
@@ -36,6 +37,16 @@ def parse_args(sys_argv: List[str]) -> Args:
         help="Specify the output format.",
         default='verbose',
         choices=['verbose', 'json'])
+    parser.add_argument(
+        '-s',
+        '--sorted',
+        # ``sorted`` is reserved for a built-in method, so we need to pick
+        # a different identifier.
+        dest='sort_by',
+        help='If set, the output is sorted by the given attribute',
+        const='soname',
+        choices=lddwrap.DEPENDENCY_ATTRIBUTES,
+        nargs='?')
 
     parser.add_argument("path", help="Specify path to the binary")
 
@@ -57,6 +68,24 @@ def _main(args: Args, stream: TextIO) -> int:
     """Execute the main routine."""
     # pylint: disable=protected-access
     deps = lddwrap.list_dependencies(path=args.path, unused=True)
+
+    if args.sort_by is not None:
+
+        def compute_key(dep: lddwrap.Dependency) -> str:
+            """Produce key for the sort."""
+            assert args.sort_by is not None
+
+            assert hasattr(dep, args.sort_by)
+            key = getattr(dep, args.sort_by)
+
+            assert key is None or isinstance(key, (str, pathlib.Path))
+
+            if key is None:
+                return ''
+
+            return str(key)
+
+        deps.sort(key=compute_key)
 
     if args.format == 'verbose':
         lddwrap._output_verbose(deps=deps, stream=stream)

@@ -114,10 +114,67 @@ class TestMain(unittest.TestCase):
     def test_main(self):
         buf = io.StringIO()
         stream = cast(TextIO, buf)
-        # one argument needs to be path to a library/utility
-        # choose /bin/pwd as example because it has less dependencies
+
         args = lddwrap.main.parse_args(
             sys_argv=["some-executable.py", "/bin/pwd"])
+
+        with tests.MockLdd(
+                out=textwrap.dedent('''\
+            \tlinux-vdso.so.1 (0x00007ffe0953f000)
+            \tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007fd548353000)
+            \t/lib64/ld-linux-x86-64.so.2 (0x00007fd54894d000)\n'''),
+                out_unused=''):
+
+            retcode = lddwrap.main._main(args=args, stream=stream)
+
+            self.assertEqual(0, retcode)
+            # pylint: disable=trailing-whitespace
+            expected_output = textwrap.dedent("""\
+            soname          | path                            | found | mem_address        | unused
+            ----------------+---------------------------------+-------+--------------------+-------
+            linux-vdso.so.1 | None                            | True  | 0x00007ffe0953f000 | False 
+            libc.so.6       | /lib/x86_64-linux-gnu/libc.so.6 | True  | 0x00007fd548353000 | False 
+            None            | /lib64/ld-linux-x86-64.so.2     | True  | 0x00007fd54894d000 | False 
+            """)
+            output = textwrap.dedent(buf.getvalue())
+
+            self.assertEqual(expected_output, output)
+
+    def test_sorted_without_specific_attribute(self):
+        buf = io.StringIO()
+        stream = cast(TextIO, buf)
+
+        args = lddwrap.main.parse_args(
+            sys_argv=["some-executable.py", "/bin/pwd", "--sorted"])
+
+        with tests.MockLdd(
+                out=textwrap.dedent('''\
+            \tlinux-vdso.so.1 (0x00007ffe0953f000)
+            \tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007fd548353000)
+            \t/lib64/ld-linux-x86-64.so.2 (0x00007fd54894d000)\n'''),
+                out_unused=''):
+
+            retcode = lddwrap.main._main(args=args, stream=stream)
+
+            self.assertEqual(0, retcode)
+            # pylint: disable=trailing-whitespace
+            expected_output = textwrap.dedent("""\
+            soname          | path                            | found | mem_address        | unused
+            ----------------+---------------------------------+-------+--------------------+-------
+            None            | /lib64/ld-linux-x86-64.so.2     | True  | 0x00007fd54894d000 | False 
+            libc.so.6       | /lib/x86_64-linux-gnu/libc.so.6 | True  | 0x00007fd548353000 | False 
+            linux-vdso.so.1 | None                            | True  | 0x00007ffe0953f000 | False 
+            """)
+            output = textwrap.dedent(buf.getvalue())
+
+            self.assertEqual(expected_output, output)
+
+    def test_sorted_with_specific_attribute(self):
+        buf = io.StringIO()
+        stream = cast(TextIO, buf)
+
+        args = lddwrap.main.parse_args(
+            sys_argv=["some-executable.py", "/bin/pwd", "--sorted", "path"])
 
         with tests.MockLdd(
                 out=textwrap.dedent('''\
