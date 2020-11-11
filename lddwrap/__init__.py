@@ -4,9 +4,10 @@
 import collections
 import json
 import pathlib
+import re
 import subprocess
 # pylint: disable=unused-import
-from typing import Any, Dict, List, Mapping, Optional, TextIO, Tuple
+from typing import Any, Dict, List, Mapping, Optional, TextIO
 
 import icontract
 
@@ -79,6 +80,34 @@ class Dependency:
                                         ("unused", self.unused)])
 
 
+_MEM_ADDRESS_RE = re.compile(r'^\s*\(([^)]*)\)\s*$')
+
+
+def _strip_mem_address(text: str) -> str:
+    r"""
+    Strip the space and brackets from the mem address in the output.
+
+    :param text: to be stripped
+    :return: bare mem address
+
+    >>> _strip_mem_address('(0x00007f9a1a329000)')
+    '0x00007f9a1a329000'
+
+    >>> _strip_mem_address(' (0x00007f9a1a329000) ')
+    '0x00007f9a1a329000'
+
+    >>> _strip_mem_address('\t(0x00007f9a1a329000)\t')
+    '0x00007f9a1a329000'
+    """
+    mtch = _MEM_ADDRESS_RE.match(text)
+    if not mtch:
+        raise RuntimeError(("Unexpected mem address. Expected to match {}, "
+                            "but got: {!r}").format(_MEM_ADDRESS_RE.pattern,
+                                                    text))
+
+    return mtch.group(1)
+
+
 def _parse_line(line: str) -> Optional[Dependency]:
     """
     Parse single line of ldd output.
@@ -91,7 +120,11 @@ def _parse_line(line: str) -> Optional[Dependency]:
     parts = [part.strip() for part in line.split(' ')]
     # pylint: disable=line-too-long
     # There are two types of outputs for a dependency, with or without soname.
+    # The VDSO is a special case (see https://man7.org/linux/man-pages/man7/vdso.7.html)
+    #
     # For example:
+    # VDSO (Ubuntu 16.04): linux-vdso.so.1 =>  (0x00007ffd7c7fd000)
+    # VDSO (Ubuntu 18.04): linux-vdso.so.1 (0x00007ffe2f993000)
     # with soname: 'libstdc++.so.6 => /usr/lib/x86_64-linux-gnu/libstdc++.so.6 (0x00007f9a19d8a000)'
     # without soname: '/lib64/ld-linux-x86-64.so.2 (0x00007f9a1a329000)'
     # with soname but not found: 'libboost_program_options.so.1.62.0 => not found'
@@ -110,7 +143,8 @@ def _parse_line(line: str) -> Optional[Dependency]:
             soname = parts[0]
             if parts[2] != '':
                 dep_path = pathlib.Path(parts[2])
-            mem_address = parts[3]
+
+            mem_address = _strip_mem_address(text=parts[3])
         else:
             if "/" in parts[0]:
                 dep_path = pathlib.Path(parts[0])
@@ -125,11 +159,18 @@ def _parse_line(line: str) -> Optional[Dependency]:
                 "Expected 2 parts in the line but found {}: {}".format(
                     len(parts), line))
 
+        if parts[0].startswith('linux-vdso'):
+            soname = parts[0]
+            path = None
+        else:
+            soname = None
+            path = pathlib.Path(parts[0])
+
         return Dependency(
-            soname=None,
-            path=pathlib.Path(parts[0]),
+            soname=soname,
+            path=path,
             found=True,
-            mem_address=parts[1])
+            mem_address=_strip_mem_address(text=parts[1]))
 
 
 @icontract.require(lambda path: path.is_file())
@@ -143,27 +184,25 @@ def list_dependencies(path: pathlib.Path,
     >>> deps = list_dependencies(path=path)
     >>> deps[0].soname
     'linux-vdso.so.1'
-    >>> deps[0].unused
-
-    >>> deps = list_dependencies(path=path, unused=True)
-    >>> deps[1].soname
-    'libselinux.so.1'
-    >>> deps[1].unused
-    True
 
     :param path: path to a file
-    :param unused: if set, check if dependencies are actually used by the
-    program
-    :param env: the environment to use
-    If ``env`` is None, currently active env will be used.
-    Otherwise specified env is used.
+    :param unused:
+        if set, check if dependencies are actually used by the program
+    :param env:
+        the environment to use.
+
+        If ``env`` is None, currently active env will be used.
+        Otherwise specified env is used.
     :return: list of dependencies
     """
-    proc = subprocess.Popen(["ldd", path.as_posix()],
-                            stdout=subprocess.PIPE,
-                            stderr=subprocess.PIPE,
-                            universal_newlines=True,
-                            env=env)
+    # We need to use /usr/bin/env since Popen ignores the PATH,
+    # see https://stackoverflow.com/questions/5658622
+    proc = subprocess.Popen(
+        ["/usr/bin/env", "ldd", path.as_posix()],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        universal_newlines=True,
+        env=env)
 
     out, err = proc.communicate()
     if proc.returncode != 0:
@@ -175,15 +214,16 @@ def list_dependencies(path: pathlib.Path,
 
     if unused:
         proc_unused = subprocess.Popen(
-            ["ldd", "--unused", path.as_posix()],
+            ["/usr/bin/env", "ldd", "--unused",
+             path.as_posix()],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             universal_newlines=True,
             env=env)
 
         out_unused, err_unused = proc_unused.communicate()
-        # return code = 0 -> no unused dependencies, return code = 1
-        # -> some unused dependencies
+        # return code = 0 -> no unused dependencies,
+        # return code = 1 -> some unused dependencies
         if proc_unused.returncode not in [0, 1]:
             raise RuntimeError(
                 "Failed to ldd external libraries of {} with code {}:\nout:\n"
