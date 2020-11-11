@@ -11,6 +11,8 @@ from typing import Any, Dict, List, Mapping, Optional, TextIO
 
 import icontract
 
+DEPENDENCY_ATTRIBUTES = ['soname', 'path', 'found', 'mem_address', 'unused']
+
 
 # yapf: disable
 @icontract.invariant(
@@ -46,6 +48,10 @@ class Dependency:
     :vartype unused: Optional[bool]
     """
 
+    @icontract.ensure(
+        lambda self: all(hasattr(self, col) for col in DEPENDENCY_ATTRIBUTES),
+        "All expected attributes are present so that "
+        "lists of dependencies can be sorted dynamically")
     def __init__(self,
                  found: bool,
                  soname: Optional[str] = None,

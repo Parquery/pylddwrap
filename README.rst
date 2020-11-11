@@ -88,6 +88,38 @@ Command-Line Tool pylddwrap
     ...
   ]
 
+* You can also sort the table with ``--sorted`` which will sort by ``soname``:
+
+.. code-block:: bash
+
+    pylddwrap /bin/pwd --sorted
+
+* Pylddwrap gives the table sorted by ``soname``:
+
+.. code-block:: text
+
+    soname          | path                            | found | mem_address        | unused
+    ----------------+---------------------------------+-------+--------------------+-------
+    None            | /lib64/ld-linux-x86-64.so.2     | True  | 0x00007fd54894d000 | False
+    libc.so.6       | /lib/x86_64-linux-gnu/libc.so.6 | True  | 0x00007fd548353000 | False
+    linux-vdso.so.1 | None                            | True  | 0x00007ffe0953f000 | False
+
+Alternatively, you can sort by any other column. For example, to sort
+by ``path``:
+
+.. code-block:: bash
+
+    pylddwrap /bin/pwd --sorted path
+
+* The output will be:
+
+.. code-block:: text
+
+    soname          | path                            | found | mem_address        | unused
+    ----------------+---------------------------------+-------+--------------------+-------
+    linux-vdso.so.1 | None                            | True  | 0x00007ffe0953f000 | False
+    libc.so.6       | /lib/x86_64-linux-gnu/libc.so.6 | True  | 0x00007fd548353000 | False
+    None            | /lib64/ld-linux-x86-64.so.2     | True  | 0x00007fd54894d000 | False
 
 
 ldwrap Python Module
