@@ -186,7 +186,7 @@ class TestAgainstMockLdd(unittest.TestCase):
     def test_bin_dir(self):
         """Test parsing the captured output  of ``ldd`` on ``/bin/dir``."""
 
-        #pylint: disable=line-too-long
+        # pylint: disable=line-too-long
         with tests.MockLdd(
                 out=textwrap.dedent('''\
                     \tlinux-vdso.so.1 (0x00007ffd66ce2000)
@@ -307,6 +307,42 @@ class TestAgainstMockLdd(unittest.TestCase):
                 self.assertListEqual(
                     [], diff_dependencies(ours=dep, theirs=exp_dep),
                     "Mismatch at the unused dependency {}".format(i))
+
+
+class TestSorting(unittest.TestCase):
+    def test_sorting_by_all_attributes(self) -> None:
+        # pylint: disable=line-too-long
+        with tests.MockLdd(
+                out=textwrap.dedent('''\
+                            \tlinux-vdso.so.1 (0x00007ffd66ce2000)
+                            \tlibselinux.so.1 => /lib/x86_64-linux-gnu/libselinux.so.1 (0x00007f72b88fc000)
+                            \tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f72b850b000)
+                            \tlibpcre.so.3 => /lib/x86_64-linux-gnu/libpcre.so.3 (0x00007f72b8299000)
+                            \tlibdl.so.2 => /lib/x86_64-linux-gnu/libdl.so.2 (0x00007f72b8095000)
+                            \t/lib64/ld-linux-x86-64.so.2 (0x00007f72b8d46000)
+                            \tlibpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007f72b7e76000)\n'''
+                                    ),
+                out_unused=''):
+            # pylint: enable=line-too-long
+
+            for attr in lddwrap.DEPENDENCY_ATTRIBUTES:
+                deps = lddwrap.list_dependencies(
+                    path=pathlib.Path("/bin/dir"), unused=True)
+
+                # pylint: disable=protected-access
+                lddwrap._sort_dependencies_in_place(deps=deps, sort_by=attr)
+
+                previous = getattr(deps[0], attr)
+                previous = '' if previous is None else str(previous)
+
+                for i in range(1, len(deps)):
+                    current = getattr(deps[i], attr)
+                    current = '' if current is None else str(current)
+
+                    self.assertLessEqual(
+                        previous, current,
+                        ("The dependencies must be sorted according to "
+                         "attribute {!r}: {!r}").format(attr, deps))
 
 
 if __name__ == '__main__':
