@@ -70,22 +70,7 @@ def _main(args: Args, stream: TextIO) -> int:
     deps = lddwrap.list_dependencies(path=args.path, unused=True)
 
     if args.sort_by is not None:
-
-        def compute_key(dep: lddwrap.Dependency) -> str:
-            """Produce key for the sort."""
-            assert args.sort_by is not None
-
-            assert hasattr(dep, args.sort_by)
-            key = getattr(dep, args.sort_by)
-
-            assert key is None or isinstance(key, (str, pathlib.Path))
-
-            if key is None:
-                return ''
-
-            return str(key)
-
-        deps.sort(key=compute_key)
+        lddwrap._sort_dependencies_in_place(deps=deps, sort_by=args.sort_by)
 
     if args.format == 'verbose':
         lddwrap._output_verbose(deps=deps, stream=stream)

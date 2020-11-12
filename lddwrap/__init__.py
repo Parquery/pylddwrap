@@ -2,6 +2,7 @@
 """Wrap ldd *nix utility to determine shared libraries required by a program."""
 
 import collections
+import copy
 import json
 import pathlib
 import re
@@ -288,6 +289,33 @@ def _update_unused(dependencies: List[Dependency],
         dep.unused = dep.path in unused_dependencies
 
     return dependencies
+
+
+# pylint: disable=unnecessary-lambda
+@icontract.require(lambda sort_by: sort_by in DEPENDENCY_ATTRIBUTES)
+@icontract.snapshot(
+    lambda deps: copy.copy(deps), name='deps', enabled=icontract.SLOW)
+@icontract.ensure(
+    lambda deps, OLD: set(deps) == set(OLD.deps), enabled=icontract.SLOW)
+# pylint: enable=line-too-long
+def _sort_dependencies_in_place(deps: List[Dependency], sort_by: str) -> None:
+    """Order the dependencies by the given ``sort_by`` attribute."""
+    if len(deps) < 2:
+        return
+
+    def compute_key(dep: Dependency) -> str:
+        """Produce key for the sort."""
+        assert hasattr(dep, sort_by)
+        key = getattr(dep, sort_by)
+
+        assert key is None or isinstance(key, (bool, str, pathlib.Path))
+
+        if key is None:
+            return ''
+
+        return str(key)
+
+    deps.sort(key=compute_key)
 
 
 def _output_verbose(deps: List[Dependency], stream: TextIO) -> None:
