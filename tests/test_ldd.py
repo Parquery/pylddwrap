@@ -2,6 +2,7 @@
 """Test lddwrap."""
 # pylint: disable=missing-docstring,too-many-public-methods
 import pathlib
+import tempfile
 import textwrap
 import unittest
 from typing import Any, List, Optional
@@ -139,6 +140,17 @@ class TestParseOutputWithoutUnused(unittest.TestCase):
         self.assertEqual(
             'Expected 2 parts in the line but found {}: {}'.format(
                 line.count(' ') + 1, line), str(run_err))
+
+    def test_parse_static(self) -> None:
+        """Test parsing of the output when we ldd a static library."""
+        # pylint: disable=protected-access
+        deps = lddwrap._cmd_output_parser(
+            textwrap.dedent('''\
+            my_static_lib.so:
+                statically linked
+            '''))
+
+        self.assertListEqual([], deps)
 
 
 class TestAgainstMockLdd(unittest.TestCase):
@@ -307,6 +319,24 @@ class TestAgainstMockLdd(unittest.TestCase):
                 self.assertListEqual(
                     [], diff_dependencies(ours=dep, theirs=exp_dep),
                     "Mismatch at the unused dependency {}".format(i))
+
+    def test_with_static_library(self) -> None:
+        """Test against a fantasy static library."""
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            lib_pth = pathlib.Path(tmp_dir) / "my_static_lib.so"
+            lib_pth.write_text("totally static!")
+
+            with tests.MockLdd(
+                    out=textwrap.dedent('''\
+                                my_static_lib.so:
+                                \tstatically linked\n'''),
+                    out_unused=''):
+                # pylint: enable=line-too-long
+                deps = lddwrap.list_dependencies(path=lib_pth, unused=True)
+
+                # The dependencies are empty since the library is
+                # statically linked.
+                self.assertListEqual([], deps)
 
 
 class TestSorting(unittest.TestCase):
