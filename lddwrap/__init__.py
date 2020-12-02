@@ -252,10 +252,18 @@ def _cmd_output_parser(cmd_out: str) -> List[Dependency]:
     """
     dependencies = []  # type: List[Dependency]
 
-    for line in [
-            line.strip() for line in cmd_out.split('\n') if line.strip() != ''
-    ]:
+    lines = [line.strip() for line in cmd_out.split('\n') if line.strip() != '']
 
+    if len(lines) == 0:
+        return []
+
+    # This is a special case of a static library. The first line refers
+    # to the library and the second line indicates that the library
+    # was statically linked.
+    if len(lines) == 2 and lines[1] == 'statically linked':
+        return []
+
+    for line in lines:
         dep = _parse_line(line=line)
         if dep is not None:
             dependencies.append(dep)
