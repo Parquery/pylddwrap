@@ -252,7 +252,11 @@ def _cmd_output_parser(cmd_out: str) -> List[Dependency]:
     """
     dependencies = []  # type: List[Dependency]
 
-    lines = [line.strip() for line in cmd_out.split('\n') if line.strip() != '']
+    lines = [
+        line.strip()
+        for line in cmd_out.split('\n')
+        if line.startswith(' ') and line.strip() != ''
+    ]
 
     if len(lines) == 0:
         return []
