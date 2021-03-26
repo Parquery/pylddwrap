@@ -119,10 +119,12 @@ class TestMain(unittest.TestCase):
             sys_argv=["some-executable.py", "/bin/pwd"])
 
         with tests.MockLdd(
-                out=textwrap.dedent('''\
-            \tlinux-vdso.so.1 (0x00007ffe0953f000)
-            \tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007fd548353000)
-            \t/lib64/ld-linux-x86-64.so.2 (0x00007fd54894d000)\n'''),
+                out="\n".join([
+                    "\tlinux-vdso.so.1 (0x00007ffe0953f000)",
+                    "\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007fd548353000)",
+                    "\t/lib64/ld-linux-x86-64.so.2 (0x00007fd54894d000)",
+                    "",
+                ]),
                 out_unused=''):
 
             retcode = lddwrap.main._main(args=args, stream=stream)
@@ -148,10 +150,12 @@ class TestMain(unittest.TestCase):
             sys_argv=["some-executable.py", "/bin/pwd", "--sorted"])
 
         with tests.MockLdd(
-                out=textwrap.dedent('''\
-            \tlinux-vdso.so.1 (0x00007ffe0953f000)
-            \tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007fd548353000)
-            \t/lib64/ld-linux-x86-64.so.2 (0x00007fd54894d000)\n'''),
+                out="\n".join([
+                    "\tlinux-vdso.so.1 (0x00007ffe0953f000)",
+                    "\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007fd548353000)",
+                    "\t/lib64/ld-linux-x86-64.so.2 (0x00007fd54894d000)",
+                    "",
+                ]),
                 out_unused=''):
 
             retcode = lddwrap.main._main(args=args, stream=stream)
@@ -177,10 +181,11 @@ class TestMain(unittest.TestCase):
             sys_argv=["some-executable.py", "/bin/pwd", "--sorted", "path"])
 
         with tests.MockLdd(
-                out=textwrap.dedent('''\
-            \tlinux-vdso.so.1 (0x00007ffe0953f000)
-            \tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007fd548353000)
-            \t/lib64/ld-linux-x86-64.so.2 (0x00007fd54894d000)\n'''),
+                out="\n".join([
+                    "\tlinux-vdso.so.1 (0x00007ffe0953f000)",
+                    "\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007fd548353000)",
+                    "\t/lib64/ld-linux-x86-64.so.2 (0x00007fd54894d000)",
+                ]),
                 out_unused=''):
 
             retcode = lddwrap.main._main(args=args, stream=stream)

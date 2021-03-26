@@ -3,7 +3,6 @@
 # pylint: disable=missing-docstring,too-many-public-methods
 import pathlib
 import tempfile
-import textwrap
 import unittest
 from typing import Any, List, Optional
 
@@ -145,10 +144,12 @@ class TestParseOutputWithoutUnused(unittest.TestCase):
         """Test parsing of the output when we ldd a static library."""
         # pylint: disable=protected-access
         deps = lddwrap._cmd_output_parser(
-            textwrap.dedent('''\
-            my_static_lib.so:
-                statically linked
-            '''))
+            "\n".join([
+                "my_static_lib.so:",
+                "    statically linked",
+                "",
+            ])
+        )
 
         self.assertListEqual([], deps)
 
@@ -158,10 +159,12 @@ class TestAgainstMockLdd(unittest.TestCase):
         """Test parsing the captured output  of ``ldd`` on ``/bin/pwd``."""
 
         with tests.MockLdd(
-                out=textwrap.dedent('''\
-            \tlinux-vdso.so.1 (0x00007ffe0953f000)
-            \tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007fd548353000)
-            \t/lib64/ld-linux-x86-64.so.2 (0x00007fd54894d000)\n'''),
+                out="\n".join([
+                    "\tlinux-vdso.so.1 (0x00007ffe0953f000)",
+                    "\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007fd548353000)",
+                    "\t/lib64/ld-linux-x86-64.so.2 (0x00007fd54894d000)",
+                    "",
+                ]),
                 out_unused=''):
             deps = lddwrap.list_dependencies(
                 path=pathlib.Path('/bin/pwd'), unused=False)
@@ -200,15 +203,16 @@ class TestAgainstMockLdd(unittest.TestCase):
 
         # pylint: disable=line-too-long
         with tests.MockLdd(
-                out=textwrap.dedent('''\
-                    \tlinux-vdso.so.1 (0x00007ffd66ce2000)
-                    \tlibselinux.so.1 => /lib/x86_64-linux-gnu/libselinux.so.1 (0x00007f72b88fc000)
-                    \tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f72b850b000)
-                    \tlibpcre.so.3 => /lib/x86_64-linux-gnu/libpcre.so.3 (0x00007f72b8299000)
-                    \tlibdl.so.2 => /lib/x86_64-linux-gnu/libdl.so.2 (0x00007f72b8095000)
-                    \t/lib64/ld-linux-x86-64.so.2 (0x00007f72b8d46000)
-                    \tlibpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007f72b7e76000)\n'''
-                                    ),
+                out="\n".join([
+                    "\tlinux-vdso.so.1 (0x00007ffd66ce2000)",
+                    "\tlibselinux.so.1 => /lib/x86_64-linux-gnu/libselinux.so.1 (0x00007f72b88fc000)",
+                    "\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f72b850b000)",
+                    "\tlibpcre.so.3 => /lib/x86_64-linux-gnu/libpcre.so.3 (0x00007f72b8299000)",
+                    "\tlibdl.so.2 => /lib/x86_64-linux-gnu/libdl.so.2 (0x00007f72b8095000)",
+                    "\t/lib64/ld-linux-x86-64.so.2 (0x00007f72b8d46000)",
+                    "\tlibpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007f72b7e76000)",
+                    "",
+                ]),
                 out_unused=''):
             # pylint: enable=line-too-long
             deps = lddwrap.list_dependencies(
@@ -270,15 +274,16 @@ class TestAgainstMockLdd(unittest.TestCase):
     def test_bin_dir_with_empty_unused(self):
         # pylint: disable=line-too-long
         with tests.MockLdd(
-                out=textwrap.dedent('''\
-                            \tlinux-vdso.so.1 (0x00007ffd66ce2000)
-                            \tlibselinux.so.1 => /lib/x86_64-linux-gnu/libselinux.so.1 (0x00007f72b88fc000)
-                            \tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f72b850b000)
-                            \tlibpcre.so.3 => /lib/x86_64-linux-gnu/libpcre.so.3 (0x00007f72b8299000)
-                            \tlibdl.so.2 => /lib/x86_64-linux-gnu/libdl.so.2 (0x00007f72b8095000)
-                            \t/lib64/ld-linux-x86-64.so.2 (0x00007f72b8d46000)
-                            \tlibpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007f72b7e76000)\n'''
-                                    ),
+                out="\n".join([
+                    "\tlinux-vdso.so.1 (0x00007ffd66ce2000)",
+                    "\tlibselinux.so.1 => /lib/x86_64-linux-gnu/libselinux.so.1 (0x00007f72b88fc000)",
+                    "\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f72b850b000)",
+                    "\tlibpcre.so.3 => /lib/x86_64-linux-gnu/libpcre.so.3 (0x00007f72b8299000)",
+                    "\tlibdl.so.2 => /lib/x86_64-linux-gnu/libdl.so.2 (0x00007f72b8095000)",
+                    "\t/lib64/ld-linux-x86-64.so.2 (0x00007f72b8d46000)",
+                    "\tlibpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007f72b7e76000)",
+                    "",
+                ]),
                 out_unused=''):
             # pylint: enable=line-too-long
             deps = lddwrap.list_dependencies(
@@ -291,13 +296,17 @@ class TestAgainstMockLdd(unittest.TestCase):
         """Test against a fantasy executable with fantasy unused."""
         # pylint: disable=line-too-long
         with tests.MockLdd(
-                out=textwrap.dedent('''\
-                            \tlinux-vdso.so.1 (0x00007ffd66ce2000)
-                            \tlibm.so.6 => /lib64/libm.so.6 (0x00007f72b7e76000)\n'''
-                                    ),
-                out_unused=textwrap.dedent('''\
-                    Unused direct dependencies:
-                    \t/lib64/libm.so.6\n''')):
+                out="\n".join([
+                    "\tlinux-vdso.so.1 (0x00007ffd66ce2000)",
+                    "\tlibm.so.6 => /lib64/libm.so.6 (0x00007f72b7e76000)",
+                    "",
+                ]),
+                out_unused="\n".join([
+                    "Unused direct dependencies:",
+                    "\t/lib64/libm.so.6",
+                    "",
+                ]),
+            ):
             # pylint: enable=line-too-long
             deps = lddwrap.list_dependencies(
                 path=pathlib.Path("/bin/dir"), unused=True)
@@ -327,9 +336,11 @@ class TestAgainstMockLdd(unittest.TestCase):
             lib_pth.write_text("totally static!")
 
             with tests.MockLdd(
-                    out=textwrap.dedent('''\
-                                my_static_lib.so:
-                                \tstatically linked\n'''),
+                    out="\n".join([
+                        "my_static_lib.so:",
+                        "\tstatically linked",
+                        "",
+                    ]),
                     out_unused=''):
                 # pylint: enable=line-too-long
                 deps = lddwrap.list_dependencies(path=lib_pth, unused=True)
@@ -343,15 +354,16 @@ class TestSorting(unittest.TestCase):
     def test_sorting_by_all_attributes(self) -> None:
         # pylint: disable=line-too-long
         with tests.MockLdd(
-                out=textwrap.dedent('''\
-                            \tlinux-vdso.so.1 (0x00007ffd66ce2000)
-                            \tlibselinux.so.1 => /lib/x86_64-linux-gnu/libselinux.so.1 (0x00007f72b88fc000)
-                            \tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f72b850b000)
-                            \tlibpcre.so.3 => /lib/x86_64-linux-gnu/libpcre.so.3 (0x00007f72b8299000)
-                            \tlibdl.so.2 => /lib/x86_64-linux-gnu/libdl.so.2 (0x00007f72b8095000)
-                            \t/lib64/ld-linux-x86-64.so.2 (0x00007f72b8d46000)
-                            \tlibpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007f72b7e76000)\n'''
-                                    ),
+                out="\n".join([
+                    "\tlinux-vdso.so.1 (0x00007ffd66ce2000)",
+                    "\tlibselinux.so.1 => /lib/x86_64-linux-gnu/libselinux.so.1 (0x00007f72b88fc000)",
+                    "\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f72b850b000)",
+                    "\tlibpcre.so.3 => /lib/x86_64-linux-gnu/libpcre.so.3 (0x00007f72b8299000)",
+                    "\tlibdl.so.2 => /lib/x86_64-linux-gnu/libdl.so.2 (0x00007f72b8095000)",
+                    "\t/lib64/ld-linux-x86-64.so.2 (0x00007f72b8d46000)",
+                    "\tlibpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007f72b7e76000)",
+                    "",
+                ]),
                 out_unused=''):
             # pylint: enable=line-too-long
 
