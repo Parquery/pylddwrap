@@ -132,7 +132,8 @@ jobs:
         pip install .
         mkdir empty/
         cd empty/
-        python -m unittest discover ../tests/
+        cp --recursive ../tests .
+        python -m unittest discover tests/
 
   all:
     name: All
