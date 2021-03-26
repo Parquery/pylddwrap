@@ -129,9 +129,9 @@ jobs:
 
     - name: Test
       run: |
-        pip install .
         mkdir empty/
         cd empty/
+        pip install dist/*.whl
         cp --recursive ../tests .
         python -m unittest discover tests/
 
