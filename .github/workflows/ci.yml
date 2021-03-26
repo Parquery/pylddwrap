@@ -123,15 +123,16 @@ jobs:
       run: python -m pip install --upgrade pip setuptools wheel
 
     - name: Install project
-      run: pip install .
+      run: |
+        mkdir empty/
+        cd empty/
+        pip install ../dist/*.whl
 
     - uses: twisted/python-info-action@v1
 
     - name: Test
       run: |
-        mkdir empty/
         cd empty/
-        pip install ../dist/*.whl
         cp --recursive ../tests .
         python -m unittest discover tests/
 
