@@ -1,7 +1,7 @@
 pylddwrap
 =========
-.. image:: https://travis-ci.com/Parquery/pylddwrap.svg?branch=master
-    :target: https://travis-ci.com/Parquery/pylddwrap.svg?branch=master
+.. image:: https://github.com/Parquery/pylddwrap/actions/workflows/ci.yml/badge.svg?branch=master
+    :target: https://github.com/Parquery/pylddwrap/actions/workflows/ci.yml?query=branch%3Amaster
     :alt: Build Status
 
 .. image:: https://coveralls.io/repos/github/Parquery/pylddwrap/badge.svg?branch=master
