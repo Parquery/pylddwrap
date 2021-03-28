@@ -1,0 +1,12 @@
+include *.py
+include *.rc
+include *.rst
+include *.txt
+include *.yapf
+include .isort.cfg
+include mypy.ini
+include tox.ini
+recursive-include docs *.py
+recursive-include docs *.rst
+recursive-include docs Makefile
+recursive-include tests *.py
