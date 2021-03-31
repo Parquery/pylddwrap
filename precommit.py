@@ -8,9 +8,7 @@ import sys
 
 
 def main() -> int:
-    """"
-    Execute the main routine.
-    """
+    """Execute the main routine."""
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--overwrite",
