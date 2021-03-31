@@ -6,9 +6,8 @@ https://github.com/pypa/sampleproject
 """
 import os
 
-from setuptools import setup, find_packages
-
 import pylddwrap_meta
+from setuptools import find_packages, setup
 
 # pylint: disable=redefined-builtin
 

@@ -15,8 +15,8 @@ def main() -> int:
     parser.add_argument(
         "--overwrite",
         help=
-        "Overwrites the unformatted source files with the well-formatted code in place. "
-        "If not set, an exception is raised if any of the files do not conform to the style guide.",
+        "Overwrites the unformatted source files with the well-formatted code in place. "  # pylint: disable=line-too-long
+        "If not set, an exception is raised if any of the files do not conform to the style guide.",  # pylint: disable=line-too-long
         action='store_true')
 
     args = parser.parse_args()
