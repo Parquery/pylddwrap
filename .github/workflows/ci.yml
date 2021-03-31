@@ -81,25 +81,25 @@ jobs:
             runs-on: ubuntu-latest
         python:
           - name: CPython 3.5
-            tox: py35
+            tox: -py35
             action: 3.5
           - name: CPython 3.6
-            tox: py36
+            tox: -py36
             action: 3.6
           - name: CPython 3.7
-            tox: py37
+            tox: -py37
             action: 3.7
           - name: CPython 3.8
-            tox: py38
+            tox: -py38
             action: 3.8
           - name: CPython 3.9
-            tox: py39
+            tox: -py39
             action: 3.9
           - name: PyPy 3.6
-            tox: pypy36
+            tox: -pypy36
             action: pypy-3.6
           - name: PyPy 3.7
-            tox: pypy37
+            tox: -pypy37
             action: pypy-3.7
         task:
           - name: Test
@@ -110,14 +110,14 @@ jobs:
               runs-on: ubuntu-latest
             python:
               name: CPython 3.8
-              tox: py38
+              tox: ''
               action: 3.8
             task:
               name: Check
               tox: check
 
     env:
-      TOX_ENV: ${{ matrix.task.tox }}-${{ matrix.python.tox }}
+      TOX_ENV: ${{ matrix.task.tox }}${{ matrix.python.tox }}
 
     steps:
     - uses: actions/checkout@v2
