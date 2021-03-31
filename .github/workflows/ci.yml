@@ -104,8 +104,14 @@ jobs:
         task:
           - name: Test
             tox: tests
-          - name: Check
-            tox: check
+        include:
+          - python:
+              name: CPython 3.8
+              tox: py38
+              action: 3.8
+            task:
+              name: Check
+              tox: check
 
     env:
       TOX_ENV: ${{ matrix.task.tox }}-${{ matrix.python.tox }}
