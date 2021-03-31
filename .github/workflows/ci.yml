@@ -148,7 +148,7 @@ jobs:
     - name: Tox info
       uses: twisted/python-info-action@v1
       with:
-        python-path: .tox/${{ env.TOX_ENV }}/*/python
+        python-path: .tox/${{ env.TOXENV }}/*/python
 
     - name: Test
       run: |
