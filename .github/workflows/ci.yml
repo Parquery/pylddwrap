@@ -117,7 +117,7 @@ jobs:
               tox: check
 
     env:
-      TOX_ENV: ${{ matrix.task.tox }}${{ matrix.python.tox }}
+      TOXENV: ${{ matrix.task.tox }}${{ matrix.python.tox }}
 
     steps:
     - uses: actions/checkout@v2
