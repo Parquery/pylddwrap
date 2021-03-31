@@ -140,7 +140,7 @@ jobs:
 
     - name: Prepare tox environment
       run: |
-        tox --notest --install-pkg=dist/*.whl
+        tox --notest --installpkg=dist/*.whl
 
     - name: Runner info
       uses: twisted/python-info-action@v1
