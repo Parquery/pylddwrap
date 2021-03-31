@@ -140,7 +140,7 @@ jobs:
 
     - name: Prepare tox environment
       run: |
-        tox --no-test
+        tox --notest
 
         pip install ../dist/*.whl
 
