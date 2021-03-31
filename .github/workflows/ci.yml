@@ -151,7 +151,7 @@ jobs:
 
     - name: Test
       run: |
-        tox
+        tox --skip-pkg-install
 
   all:
     name: All
