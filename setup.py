@@ -55,6 +55,7 @@ setup(
             'yapf==0.24.0',
             'tox>=3.0.0',
             'coverage>=4.5.1,<5',
+            'isort<5',
             'pydocstyle>=3.0.0,<4',
             'pyicontract-lint>=2.0.0,<3',
             'docutils>=0.14,<1',
