@@ -103,7 +103,7 @@ jobs:
             action: pypy-3.7
         task:
           - name: Test
-            tox: tests
+            tox: test
         include:
           - os:
               name: Linux
