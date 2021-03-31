@@ -105,7 +105,10 @@ jobs:
           - name: Test
             tox: tests
         include:
-          - python:
+          - os:
+              name: Linux
+              runs-on: ubuntu-latest
+            python:
               name: CPython 3.8
               tox: py38
               action: 3.8
