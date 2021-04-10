@@ -115,7 +115,7 @@ jobs:
               tox: check
 
     env:
-      TOXENV: ${{ matrix.task.tox }}${{ fromJSON('["", "-"]')[matrix.task.tox != null and matrix.python.tox] }}${{ matrix.python.tox }}
+      TOXENV: ${{ matrix.task.tox }}${{ fromJSON('["", "-"]')[matrix.task.tox != null && matrix.python.tox != null] }}${{ matrix.python.tox }}
 
     steps:
     - uses: actions/checkout@v2
