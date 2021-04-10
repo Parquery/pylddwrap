@@ -212,7 +212,7 @@ Development
 
     pip3 install -e .[dev]
 
-* Tests can be run directly using ``unittest``.
+* Tests can be run directly using ``unittest``:
 
 .. code-block:: bash
 
@@ -232,7 +232,7 @@ Namely, we use:
 * Various linter checks are done with `pylint <https://www.pylint.org/>`_.
 
 
-Apply the automatic formatting by running the ``format`` environment.
+Apply the automatic formatting by running the ``format`` environment:
 
 .. code-block:: bash
 
