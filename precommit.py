@@ -3,8 +3,19 @@
 import argparse
 import os
 import pathlib
+import shutil
 import subprocess
 import sys
+import sysconfig
+import textwrap
+
+# os.fspath() is 3.6+.  str is a reasonable substitute
+# https://docs.python.org/3.9/library/os.html#os.fspath
+fspath = getattr(os, "fspath", str)
+
+
+class ToxNotFoundError(Exception):
+    """Rasie when tox not found in expected locations."""
 
 
 def main() -> int:
@@ -19,73 +30,40 @@ def main() -> int:
 
     args = parser.parse_args()
 
-    overwrite = bool(args.overwrite)
+    tox_environments = ["check", "_auto_version"]
+
+    if args.overwrite:
+        tox_environments.insert(0, "format")
+
+    tox_from_path = shutil.which("tox")
+
+    maybe_scripts = sysconfig.get_path("scripts")
+    tox_from_scripts = pathlib.Path(maybe_scripts).joinpath(
+        "tox") if maybe_scripts is not None else None
+
+    if tox_from_path is not None:
+        tox = pathlib.Path(tox_from_path)
+    elif tox_from_scripts is not None and tox_from_scripts.is_file():
+        tox = tox_from_scripts
+    else:
+        message = textwrap.dedent(f'''\
+        'tox' executable not found in PATH or scripts directory
+            PATH: {os.environ['PATH']}
+            scripts: {maybe_scripts}
+        ''')
+        raise ToxNotFoundError(message)
 
     repo_root = pathlib.Path(__file__).parent
-    # yapf: disable
-    print("YAPF'ing...")
-    if overwrite:
-        subprocess.check_call([
-            "yapf", "--in-place", "--style=style.yapf", "--recursive", "tests",
-            "lddwrap", "setup.py", "precommit.py", "bin/pylddwrap"
-        ], cwd=str(repo_root))
-    else:
-        subprocess.check_call([
-            "yapf", "--diff", "--style=style.yapf", "--recursive", "tests",
-            "lddwrap", "setup.py", "precommit.py", "bin/pylddwrap"
-        ], cwd=str(repo_root))
 
-    print("Mypy'ing...")
-    subprocess.check_call(["mypy", "lddwrap", "tests", "bin/pylddwrap"],
-                          cwd=str(repo_root))
+    tox_ini = repo_root.joinpath("tox.ini")
 
-    print("Isort'ing...")
-    if overwrite:
-        subprocess.check_call([
-            "isort", "--recursive", "tests", "lddwrap",
-            "bin/pylddwrap"], cwd=str(repo_root))
-    else:
-        subprocess.check_call([
-            "isort", "--check-only", "--recursive", "tests", "lddwrap",
-            "bin/pylddwrap"], cwd=str(repo_root))
+    command = [
+        fspath(tox), "-c",
+        fspath(tox_ini), "-e", ",".join(tox_environments)
+    ]
+    completed_process = subprocess.run(command)  # pylint: disable=W1510
 
-    print("Pylint'ing...")
-    subprocess.check_call(
-        ["pylint", "--rcfile=pylint.rc", "tests", "lddwrap", "bin/pylddwrap"],
-        cwd=str(repo_root))
-
-    print("Pydocstyle'ing...")
-    subprocess.check_call(["pydocstyle", "lddwrap", "bin/pylddwrap"],
-                          cwd=str(repo_root))
-
-    print("Testing...")
-    env = os.environ.copy()
-    env['ICONTRACT_SLOW'] = 'true'
-
-    subprocess.check_call([
-        "coverage", "run", "--source", "lddwrap", "-m", "unittest", "discover",
-        "tests"
-    ], cwd=str(repo_root))
-
-    subprocess.check_call(["coverage", "report"])
-
-    # yapf: enable
-    print("Doctesting...")
-    subprocess.check_call(
-        [sys.executable, "-m", "doctest",
-         str(repo_root / "README.rst")])
-    for pth in (repo_root / "lddwrap").glob("**/*.py"):
-        subprocess.check_call([sys.executable, "-m", "doctest", str(pth)])
-
-    print("pyicontract-lint'ing...")
-    for pth in (repo_root / "lddwrap").glob("**/*.py"):
-        subprocess.check_call(["pyicontract-lint", str(pth)])
-
-    print("Checking the restructured text of the readme...")
-    subprocess.check_call(
-        ['python3', 'setup.py', 'check', '--restructuredtext', '--strict'])
-
-    return 0
+    return completed_process.returncode
 
 
 if __name__ == "__main__":
