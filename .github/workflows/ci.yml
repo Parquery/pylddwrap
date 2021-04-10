@@ -103,7 +103,6 @@ jobs:
             action: pypy-3.7
         task:
           - name: Test
-            tox: test
         include:
           - os:
               name: Linux
@@ -116,7 +115,7 @@ jobs:
               tox: check
 
     env:
-      TOXENV: ${{ matrix.task.tox }}${{ fromJSON('["", "-"]')[matrix.python.tox != null] }}${{ matrix.python.tox }}
+      TOXENV: ${{ matrix.task.tox }}${{ fromJSON('["", "-"]')[matrix.task.tox != null and matrix.python.tox] }}${{ matrix.python.tox }}
 
     steps:
     - uses: actions/checkout@v2
