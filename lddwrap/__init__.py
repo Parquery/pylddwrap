@@ -15,10 +15,6 @@ import icontract
 DEPENDENCY_ATTRIBUTES = ['soname', 'path', 'found', 'mem_address', 'unused']
 
 
-def not_covered():
-    print('no testing for this')
-
-
 # yapf: disable
 @icontract.invariant(
     lambda self: not (self.soname is None and self.found) or (
