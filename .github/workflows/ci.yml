@@ -204,8 +204,7 @@ jobs:
 
     - name: Make ${{ github.base_ref }} branch exist
       run: |
-        git checkout -b ${{ github.base_ref }} --track origin/${{ github.base_ref }}
-        git checkout -
+        git fetch origin master:refs/remotes/origin/master
 
     - name: Download package files
       uses: actions/download-artifact@v2
