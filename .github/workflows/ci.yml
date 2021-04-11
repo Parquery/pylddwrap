@@ -236,7 +236,7 @@ jobs:
 
     - name: Run tox environment
       run: |
-        tox --skip-pkg-install --compare-branch=${{ github.base_ref }}
+        tox --skip-pkg-install -- --compare-branch=${{ github.base_ref }}
 
   all:
     name: All
