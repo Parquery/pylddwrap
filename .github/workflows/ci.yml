@@ -202,6 +202,12 @@ jobs:
         fetch-depth: 0
         ref: ${{ github.event.pull_request.head.sha }}
 
+    - name: Debugging
+      run: |
+        git status
+        git rev-parse HEAD
+        git log -n 4
+
     - name: Download package files
       uses: actions/download-artifact@v2
       with:
