@@ -55,7 +55,7 @@ setup(
             'yapf==0.24.0',
             'tox>=3.0.0',
             'coverage>=4.5.1,<5',
-            'diff-cover>=5.0.1,<6',
+            'diff-cover>=5.0.1,<6; python_version >= "3.6"',
             'isort<5',
             'pydocstyle>=3.0.0,<4',
             'pyicontract-lint>=2.0.0,<3',
