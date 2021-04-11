@@ -204,9 +204,11 @@ jobs:
 
     - name: Debugging
       run: |
+        set -vx
         git status
         git rev-parse HEAD
         git log -n 4
+        git diff master...HEAD
 
     - name: Download package files
       uses: actions/download-artifact@v2
