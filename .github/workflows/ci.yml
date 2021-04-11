@@ -203,6 +203,7 @@ jobs:
         ref: ${{ github.event.pull_request.head.sha }}
 
     - name: Make ${{ github.base_ref }} branch exist
+      if: ${{ github.base_ref }}
       run: |
         git checkout -b ${{ github.base_ref }} --track origin/${{ github.base_ref }}
         git checkout -
@@ -243,8 +244,10 @@ jobs:
         python-path: .tox/${{ env.TOXENV }}/*/python
 
     - name: Run tox environment
+      env:
+        BASE_REF: ${{ fromJSON('["${{ github.event.before }}", "${{ github.base_ref }}"]')[github.base_ref != null] }}
       run: |
-        tox --skip-pkg-install -- --compare-branch=${{ github.base_ref }}
+        tox --skip-pkg-install -- --compare-branch=${BASE_REF}
 
   all:
     name: All
