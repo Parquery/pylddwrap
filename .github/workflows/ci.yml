@@ -206,9 +206,9 @@ jobs:
       run: |
         set -vx
         git status
+        git remote -v
         git rev-parse HEAD
         git rev-parse master
-        git remote -v
         git log -n 4
         git diff master...HEAD
 
