@@ -11,6 +11,7 @@ from typing import List, TextIO, cast
 import lddwrap
 import lddwrap.main
 import pylddwrap_meta
+
 # pylint: disable=missing-docstring
 import tests
 
