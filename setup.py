@@ -6,9 +6,8 @@ https://github.com/pypa/sampleproject
 """
 import os
 
-from setuptools import setup, find_packages
-
 import pylddwrap_meta
+from setuptools import find_packages, setup
 
 # pylint: disable=redefined-builtin
 
@@ -52,11 +51,12 @@ setup(
     extras_require={
         'dev': [
             # yapf: disable
-            'mypy==0.790',
+            'mypy==0.790; implementation_name != "pypy"',
             'pylint==2.6.0',
             'yapf==0.24.0',
             'tox>=3.0.0',
             'coverage>=4.5.1,<5',
+            'isort<5',
             'pydocstyle>=3.0.0,<4',
             'pyicontract-lint>=2.0.0,<3',
             'docutils>=0.14,<1',
