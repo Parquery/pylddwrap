@@ -209,6 +209,7 @@ jobs:
         git remote -v
         git show-ref
         git checkout -b master --track origin/master
+        git checkout -
         #git branch --track master
         #git branch --set-upstream-to=refs/remotes/origin/master master
         git show-ref
