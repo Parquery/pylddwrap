@@ -239,7 +239,7 @@ jobs:
 
     - name: Run tox environment
       env:
-        BASE_REF: ${{ fromJSON(format('["{0}", "origin/{1}"]', github.event.before, github.base_ref))[github.base_ref != ''] }}
+        BASE_REF: ${{ fromJSON(format('[{0}, {1}]', toJSON(github.event.before), toJSON(format('origin/{0}', github.base_ref))))[github.base_ref != ''] }}
       run: |
         tox --skip-pkg-install -- --compare-branch="${BASE_REF}"
 
