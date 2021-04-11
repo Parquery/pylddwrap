@@ -198,6 +198,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
 
     - name: Download package files
       uses: actions/download-artifact@v2
