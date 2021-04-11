@@ -16,7 +16,6 @@ DEPENDENCY_ATTRIBUTES = ['soname', 'path', 'found', 'mem_address', 'unused']
 
 
 def not_covered():
-    """This function is going to get reverted."""
     print('no testing for this')
 
 
