@@ -147,7 +147,11 @@ class TestParseOutputWithoutUnused(unittest.TestCase):
         informational.
         """
         # https://github.com/Parquery/pylddwrap/pull/14
-        line = "qt/6.0.2/gcc_64/plugins/sqldrivers/libqsqlpsql.so: /lib/x86_64-linux-gnu/libpq.so.5: no version information available (required by qt/6.0.2/gcc_64/plugins/sqldrivers/libqsqlpsql.so)"
+        line = (
+            "qt/6.0.2/gcc_64/plugins/sqldrivers/libqsqlpsql.so:" +
+            " /lib/x86_64-linux-gnu/libpq.so.5:" +
+            " no version information available" +
+            " (required by qt/6.0.2/gcc_64/plugins/sqldrivers/libqsqlpsql.so)")
         result = lddwrap._parse_line(line=line)  # pylint: disable=protected-access
 
         self.assertIsNone(result)
