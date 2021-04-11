@@ -208,7 +208,8 @@ jobs:
         git status
         git remote -v
         git show-ref
-        git branch --set-upstream-to=refs/remotes/origin/master master
+        git branch --track master
+#        git branch --set-upstream-to=refs/remotes/origin/master master
         git show-ref
         git rev-parse HEAD
         git rev-parse master
