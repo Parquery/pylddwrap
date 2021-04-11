@@ -202,21 +202,10 @@ jobs:
         fetch-depth: 0
         ref: ${{ github.event.pull_request.head.sha }}
 
-    - name: Debugging
+    - name: Make ${{ github.base_ref }} branch exist
       run: |
-        set -vx
-        git status
-        git remote -v
-        git show-ref
-        git checkout -b master --track origin/master
+        git checkout -b ${{ github.base_ref }} --track origin/${{ github.base_ref }}
         git checkout -
-        #git branch --track master
-        #git branch --set-upstream-to=refs/remotes/origin/master master
-        git show-ref
-        git rev-parse HEAD
-        git rev-parse master
-        git log -n 4
-        git diff master...HEAD
 
     - name: Download package files
       uses: actions/download-artifact@v2
