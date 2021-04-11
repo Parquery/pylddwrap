@@ -212,12 +212,11 @@ Development
 
     pip3 install -e .[dev]
 
-We use tox for testing and packaging the distribution. Assuming that the virtual environment has been activated and the
-development dependencies have been installed, run:
+* Tests can be run directly using ``unittest``:
 
 .. code-block:: bash
 
-    tox
+    python3 -m unittest discover tests/
 
 
 Pre-commit Checks
@@ -232,17 +231,18 @@ Namely, we use:
 * Static type analysis is performed with `mypy <http://mypy-lang.org/>`_.
 * Various linter checks are done with `pylint <https://www.pylint.org/>`_.
 
-Run the pre-commit checks locally from an activated virtual environment with development dependencies:
+
+Apply the automatic formatting by running the ``format`` environment:
 
 .. code-block:: bash
 
-    ./precommit.py
+    tox -e format
 
-* The pre-commit script can also automatically format the code:
+Run the pre-commit checks and tests using ``tox``:
 
 .. code-block:: bash
 
-    ./precommit.py  --overwrite
+    tox
 
 
 Versioning
