@@ -207,6 +207,7 @@ jobs:
         set -vx
         git status
         git remote -v
+        git show-ref
         git rev-parse HEAD
         git rev-parse master
         git log -n 4
