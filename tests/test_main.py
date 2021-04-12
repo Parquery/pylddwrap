@@ -122,7 +122,7 @@ class TestMain(unittest.TestCase):
         with tests.MockLdd(
                 out="\n".join([
                     "\tlinux-vdso.so.1 (0x00007ffe0953f000)",
-                    "\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007fd548353000)",
+                    "\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007fd548353000)",  # pylint: disable=C0301
                     "\t/lib64/ld-linux-x86-64.so.2 (0x00007fd54894d000)",
                     "",
                 ]),
@@ -153,7 +153,7 @@ class TestMain(unittest.TestCase):
         with tests.MockLdd(
                 out="\n".join([
                     "\tlinux-vdso.so.1 (0x00007ffe0953f000)",
-                    "\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007fd548353000)",
+                    "\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007fd548353000)",  # pylint: disable=C0301
                     "\t/lib64/ld-linux-x86-64.so.2 (0x00007fd54894d000)",
                     "",
                 ]),
@@ -184,7 +184,7 @@ class TestMain(unittest.TestCase):
         with tests.MockLdd(
                 out="\n".join([
                     "\tlinux-vdso.so.1 (0x00007ffe0953f000)",
-                    "\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007fd548353000)",
+                    "\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007fd548353000)",  # pylint: disable=C0301
                     "\t/lib64/ld-linux-x86-64.so.2 (0x00007fd54894d000)",
                 ]),
                 out_unused=''):

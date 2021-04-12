@@ -144,13 +144,11 @@ class TestParseOutputWithoutUnused(unittest.TestCase):
     def test_parse_static(self) -> None:
         """Test parsing of the output when we ldd a static library."""
         # pylint: disable=protected-access
-        deps = lddwrap._cmd_output_parser(
-            "\n".join([
-                "my_static_lib.so:",
-                "    statically linked",
-                "",
-            ])
-        )
+        deps = lddwrap._cmd_output_parser("\n".join([
+            "my_static_lib.so:",
+            "    statically linked",
+            "",
+        ]))
 
         self.assertListEqual([], deps)
 
@@ -162,7 +160,7 @@ class TestAgainstMockLdd(unittest.TestCase):
         with tests.MockLdd(
                 out="\n".join([
                     "\tlinux-vdso.so.1 (0x00007ffe0953f000)",
-                    "\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007fd548353000)",
+                    "\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007fd548353000)",  # pylint: disable=C0301  # pylint: disable=C0301
                     "\t/lib64/ld-linux-x86-64.so.2 (0x00007fd54894d000)",
                     "",
                 ]),
@@ -307,7 +305,7 @@ class TestAgainstMockLdd(unittest.TestCase):
                     "\t/lib64/libm.so.6",
                     "",
                 ]),
-            ):
+        ):
             # pylint: enable=line-too-long
             deps = lddwrap.list_dependencies(
                 path=pathlib.Path("/bin/dir"), unused=True)
