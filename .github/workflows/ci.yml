@@ -243,13 +243,24 @@ jobs:
       run: |
         tox --skip-pkg-install -- --compare-branch="${BASE_REF}"
 
-    - name: Publish to Coveralls
+    - name: Coverage Processing
       if: always()
-      continue-on-error: true
       run: |
-        python -m coveralls -v
-      env:
-        COVERALLS_REPO_TOKEN: 'fill in here'
+        mkdir coverage_reports
+        cp .coverage "coverage_reports/.coverage.all"
+        cp coverage.xml "coverage_reports/coverage.all.xml"
+
+    - name: Upload Coverage
+      if: always()
+      uses: actions/upload-artifact@v2
+      with:
+        name: coverage
+        path: coverage_reports/*
+
+    - uses: coverallsapp/github-action@master
+      if: always()
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
 
   all:
     name: All
