@@ -258,8 +258,10 @@ jobs:
         path: all_coverage_report/*
 
     - name: Publish to Coveralls
-      if: always()
       continue-on-error: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      if: always()
       run: |
         python -m coveralls -v
 
