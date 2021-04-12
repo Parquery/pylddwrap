@@ -54,7 +54,7 @@ setup(
             'pylint==2.6.0',
             'yapf==0.24.0',
             'tox>=3.0.0',
-            'coverage>=4.5.1,<5',
+            'coverage>=5.5.0,<6',
             'diff-cover>=5.0.1,<6; python_version >= "3.6"',
             'isort<5',
             'pydocstyle>=3.0.0,<4',
