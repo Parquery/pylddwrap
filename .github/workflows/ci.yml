@@ -247,20 +247,21 @@ jobs:
       if: always()
       run: |
         mkdir coverage_reports
-        cp .coverage "coverage_reports/.coverage.all"
-        cp coverage.xml "coverage_reports/coverage.all.xml"
+        cp .coverage "all_coverage_report/.coverage.all"
+        cp coverage.xml "all_coverage_report/coverage.all.xml"
 
     - name: Upload Coverage
       if: always()
       uses: actions/upload-artifact@v2
       with:
         name: coverage
-        path: coverage_reports/*
+        path: all_coverage_report/*
 
-    - uses: coverallsapp/github-action@master
+    - name: Publish to Coveralls
       if: always()
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
+      continue-on-error: true
+      run: |
+        python -m coveralls -v
 
   all:
     name: All
