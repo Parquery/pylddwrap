@@ -246,7 +246,7 @@ jobs:
     - name: Coverage Processing
       if: always()
       run: |
-        mkdir coverage_reports
+        mkdir all_coverage_report
         cp .coverage "all_coverage_report/.coverage.all"
         cp coverage.xml "all_coverage_report/coverage.all.xml"
 
