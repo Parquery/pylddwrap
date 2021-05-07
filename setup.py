@@ -46,6 +46,7 @@ setup(
     license='License :: OSI Approved :: MIT License',
     keywords='ldd dependency dependencies lddwrap pylddwrap',
     packages=find_packages(exclude=['tests']),
+    python_requires='>=3.5',
     install_requires=install_requires,
     extras_require={
         'dev': [
