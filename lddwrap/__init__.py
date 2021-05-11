@@ -124,7 +124,6 @@ def _parse_line(line: str) -> Optional[Dependency]:
 
     """
     found = not 'not found' in line
-    no_version_info = 'no version information available' in line
     parts = [part.strip() for part in line.split(' ')]
     # pylint: disable=line-too-long
     # There are two types of outputs for a dependency, with or without soname.
@@ -163,7 +162,8 @@ def _parse_line(line: str) -> Optional[Dependency]:
             soname=soname, path=dep_path, found=found, mem_address=mem_address)
     else:
         if len(parts) != 2:
-            if no_version_info:
+            # Please see https://github.com/Parquery/pylddwrap/pull/14
+            if 'no version information available' in line:
                 return None
 
             raise RuntimeError(
