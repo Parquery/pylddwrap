@@ -162,6 +162,10 @@ def _parse_line(line: str) -> Optional[Dependency]:
             soname=soname, path=dep_path, found=found, mem_address=mem_address)
     else:
         if len(parts) != 2:
+            # Please see https://github.com/Parquery/pylddwrap/pull/14
+            if 'no version information available' in line:
+                return None
+
             raise RuntimeError(
                 "Expected 2 parts in the line but found {}: {}".format(
                     len(parts), line))

@@ -130,7 +130,7 @@ class TestParseOutputWithoutUnused(unittest.TestCase):
         # ``parse_line`` raises a RuntimeError when it receives an unexpected
         # structured line
         run_err = None  # type: Optional[RuntimeError]
-        line = "some wrong data which does not make sense"
+        line = "\tsome wrong data which does not make sense"
         try:
             lddwrap._parse_line(line=line)  # pylint: disable=protected-access
         except RuntimeError as err:
@@ -140,6 +140,20 @@ class TestParseOutputWithoutUnused(unittest.TestCase):
         self.assertEqual(
             'Expected 2 parts in the line but found {}: {}'.format(
                 line.count(' ') + 1, line), str(run_err))
+
+    def test_parse_non_indented_line(self):
+        """Lines without leading indentation, at this point in processing, are
+        informational.
+        """
+        # https://github.com/Parquery/pylddwrap/pull/14
+        line = (
+            "qt/6.0.2/gcc_64/plugins/sqldrivers/libqsqlpsql.so:" +
+            " /lib/x86_64-linux-gnu/libpq.so.5:" +
+            " no version information available" +
+            " (required by qt/6.0.2/gcc_64/plugins/sqldrivers/libqsqlpsql.so)")
+        result = lddwrap._parse_line(line=line)  # pylint: disable=protected-access
+
+        self.assertIsNone(result)
 
     def test_parse_static(self) -> None:
         """Test parsing of the output when we ldd a static library."""
