@@ -1,3 +1,8 @@
+1.2.0
+=====
+* Ignore not-indented ldd output (#14)
+* Added handling of static libraries (#13)
+
 1.1.0
 =====
 * Added ``--sorted`` command-line option
