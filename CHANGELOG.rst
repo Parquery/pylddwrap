@@ -1,3 +1,7 @@
+1.2.1
+=====
+* Improved support of static libraries (#13)
+
 1.2.0
 =====
 * Ignore not-indented ldd output (#14)
