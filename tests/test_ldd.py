@@ -155,7 +155,7 @@ class TestParseOutputWithoutUnused(unittest.TestCase):
 
         self.assertIsNone(result)
 
-    def test_parse_static_1(self) -> None:
+    def test_parse_static_with_two_line_output(self) -> None:
         """Test parsing of the output when we ldd a static library."""
         # pylint: disable=protected-access
         deps = lddwrap._cmd_output_parser("\n".join([
@@ -166,7 +166,7 @@ class TestParseOutputWithoutUnused(unittest.TestCase):
 
         self.assertListEqual([], deps)
 
-    def test_parse_static_2(self) -> None:
+    def test_parse_static_with_single_line_output(self) -> None:
         """Test parsing of the output when we ldd a static library."""
         # pylint: disable=protected-access
         deps = lddwrap._cmd_output_parser("\tstatically linked\n")
