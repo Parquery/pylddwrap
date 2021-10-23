@@ -36,7 +36,6 @@ setup(
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python :: Implementation :: CPython',
         'Programming Language :: Python :: Implementation :: PyPy',
-        'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
@@ -46,7 +45,7 @@ setup(
     license='License :: OSI Approved :: MIT License',
     keywords='ldd dependency dependencies lddwrap pylddwrap',
     packages=find_packages(exclude=['tests']),
-    python_requires='>=3.5',
+    python_requires='>=3.6',
     install_requires=install_requires,
     extras_require={
         'dev': [
