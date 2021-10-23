@@ -261,10 +261,12 @@ def _cmd_output_parser(cmd_out: str) -> List[Dependency]:
     if len(lines) == 0:
         return []
 
-    # This is a special case of a static library. The first line refers
-    # to the library and the second line indicates that the library
-    # was statically linked.
-    if len(lines) == 2 and lines[1] == 'statically linked':
+    # Static libraries can appear in multiple forms:
+    # - a first line refering to the library and a second line indicating
+    #   that the library was statically linked,
+    # - only a single line indicating statically linked.
+    # See: https://github.com/Parquery/pylddwrap/issues/12
+    if 1 <= len(lines) <= 2 and lines[-1] == 'statically linked':
         return []
 
     for line in lines:
