@@ -1,3 +1,8 @@
+1.2.1
+=====
+* Removed support for Python 3.5 (#23)
+* Improved support of statically linked libraries (#22)
+
 1.2.0
 =====
 * Ignore not-indented ldd output (#14)
