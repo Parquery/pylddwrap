@@ -115,6 +115,10 @@ def _strip_mem_address(text: str) -> str:
     return mtch.group(1)
 
 
+_LDD_ARROW_OUTPUT_RE = re.compile(r"(?P<soname>.+) => (?P<dep_path>.*) (?P<mem_address>\(?.*\)?)")
+_LDD_NON_ARROW_OUTPUT_RE = re.compile(r"(?P<dep_path>.*) (?P<mem_address>\(?.*\)?)")
+
+
 def _parse_line(line: str) -> Optional[Dependency]:
     """
     Parse single line of ldd output.
@@ -138,50 +142,56 @@ def _parse_line(line: str) -> Optional[Dependency]:
     # with soname but without rpath: 'linux-vdso.so.1 =>  (0x00007ffd7c7fd000)'
     # pylint: enable=line-too-long
     if '=>' in line:
-        if len(parts) != 4:
-            raise RuntimeError(
-                "Expected 4 parts in the line but found {}: {}".format(
-                    len(parts), line))
-
         soname = None
         dep_path = None
         mem_address = None
-        if found:
-            soname = parts[0]
-            if parts[2] != '':
-                dep_path = pathlib.Path(parts[2])
 
-            mem_address = _strip_mem_address(text=parts[3])
+        mtch = _LDD_ARROW_OUTPUT_RE.match(line)
+        if not mtch:
+            raise RuntimeError(("Unexpected ldd output. Expect a regex match {}, "
+                                "but got: {!r}").format(_LDD_ARROW_OUTPUT_RE.pattern,
+                                                        line))
+
+        if found:
+            soname = mtch["soname"]
+            if mtch["dep_path"]:
+                dep_path = pathlib.Path(mtch["dep_path"])
+            if mtch["mem_address"]:
+                mem_address = _strip_mem_address(mtch["mem_address"])
         else:
             if "/" in parts[0]:
-                dep_path = pathlib.Path(parts[0])
+                # This is a special case where the dep_path comes before the arrow
+                # and we have no soname
+                dep_path = pathlib.Path(mtch["soname"])
             else:
-                soname = parts[0]
+                soname = mtch["soname"]
 
         return Dependency(
             soname=soname, path=dep_path, found=found, mem_address=mem_address)
     else:
-        if len(parts) != 2:
-            # Please see https://github.com/Parquery/pylddwrap/pull/14
-            if 'no version information available' in line:
-                return None
+        # Please see https://github.com/Parquery/pylddwrap/pull/14
+        if 'no version information available' in line:
+            return None
 
-            raise RuntimeError(
-                "Expected 2 parts in the line but found {}: {}".format(
-                    len(parts), line))
+        mtch = _LDD_NON_ARROW_OUTPUT_RE.match(line)
+        if not mtch:
+            raise RuntimeError(("Unexpected ldd output. Expect a regex match {}, "
+                                "but got: {!r}").format(_LDD_NON_ARROW_OUTPUT_RE.pattern,
+                                                        line))
 
-        if parts[0].startswith('linux-vdso'):
-            soname = parts[0]
-            path = None
+        # Special case for linux-vdso
+        if mtch["dep_path"].startswith("linux-vdso"):
+            soname = mtch["dep_path"]
+            dep_path = None
         else:
             soname = None
-            path = pathlib.Path(parts[0])
+            dep_path = pathlib.Path(mtch["dep_path"])
 
         return Dependency(
             soname=soname,
-            path=path,
+            path=dep_path,
             found=True,
-            mem_address=_strip_mem_address(text=parts[1]))
+            mem_address=_strip_mem_address(text=mtch["mem_address"]))
 
 
 @icontract.require(lambda path: path.is_file())
