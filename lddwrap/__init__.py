@@ -4,6 +4,7 @@
 import collections
 import copy
 import json
+import os
 import pathlib
 import re
 import subprocess
@@ -87,36 +88,8 @@ class Dependency:
                                         ("unused", self.unused)])
 
 
-_MEM_ADDRESS_RE = re.compile(r'^\s*\(([^)]*)\)\s*$')
-
-
-def _strip_mem_address(text: str) -> str:
-    r"""
-    Strip the space and brackets from the mem address in the output.
-
-    :param text: to be stripped
-    :return: bare mem address
-
-    >>> _strip_mem_address('(0x00007f9a1a329000)')
-    '0x00007f9a1a329000'
-
-    >>> _strip_mem_address(' (0x00007f9a1a329000) ')
-    '0x00007f9a1a329000'
-
-    >>> _strip_mem_address('\t(0x00007f9a1a329000)\t')
-    '0x00007f9a1a329000'
-    """
-    mtch = _MEM_ADDRESS_RE.match(text)
-    if not mtch:
-        raise RuntimeError(("Unexpected mem address. Expected to match {}, "
-                            "but got: {!r}").format(_MEM_ADDRESS_RE.pattern,
-                                                    text))
-
-    return mtch.group(1)
-
-
-_LDD_ARROW_OUTPUT_RE = re.compile(r"(?P<soname>.+) => (?P<dep_path>.*) (?P<mem_address>\(?.*\)?)")
-_LDD_NON_ARROW_OUTPUT_RE = re.compile(r"(?P<dep_path>.*) (?P<mem_address>\(?.*\)?)")
+_LDD_ARROW_OUTPUT_RE = re.compile(r"(?P<soname>.+) => (?P<dep_path>.*) \(?(?P<mem_address>\w*)\)?")
+_LDD_NON_ARROW_OUTPUT_RE = re.compile(r"(?P<dep_path>.*) \(?(?P<mem_address>\w*)\)?")
 
 
 def _parse_line(line: str) -> Optional[Dependency]:
@@ -141,23 +114,21 @@ def _parse_line(line: str) -> Optional[Dependency]:
     # with soname but not found: 'libboost_program_options.so.1.62.0 => not found'
     # with soname but without rpath: 'linux-vdso.so.1 =>  (0x00007ffd7c7fd000)'
     # pylint: enable=line-too-long
+    soname = None
+    dep_path = None
+    mem_address = None
     if '=>' in line:
-        soname = None
-        dep_path = None
-        mem_address = None
-
         mtch = _LDD_ARROW_OUTPUT_RE.match(line)
         if not mtch:
             raise RuntimeError(("Unexpected ldd output. Expect a regex match {}, "
                                 "but got: {!r}").format(_LDD_ARROW_OUTPUT_RE.pattern,
                                                         line))
-
         if found:
             soname = mtch["soname"]
             if mtch["dep_path"]:
                 dep_path = pathlib.Path(mtch["dep_path"])
             if mtch["mem_address"]:
-                mem_address = _strip_mem_address(mtch["mem_address"])
+                mem_address = mtch["mem_address"]
         else:
             if "/" in parts[0]:
                 # This is a special case where the dep_path comes before the arrow
@@ -165,9 +136,6 @@ def _parse_line(line: str) -> Optional[Dependency]:
                 dep_path = pathlib.Path(mtch["soname"])
             else:
                 soname = mtch["soname"]
-
-        return Dependency(
-            soname=soname, path=dep_path, found=found, mem_address=mem_address)
     else:
         # Please see https://github.com/Parquery/pylddwrap/pull/14
         if 'no version information available' in line:
@@ -178,20 +146,21 @@ def _parse_line(line: str) -> Optional[Dependency]:
             raise RuntimeError(("Unexpected ldd output. Expect a regex match {}, "
                                 "but got: {!r}").format(_LDD_NON_ARROW_OUTPUT_RE.pattern,
                                                         line))
-
         # Special case for linux-vdso
         if mtch["dep_path"].startswith("linux-vdso"):
             soname = mtch["dep_path"]
-            dep_path = None
         else:
-            soname = None
             dep_path = pathlib.Path(mtch["dep_path"])
 
-        return Dependency(
-            soname=soname,
-            path=dep_path,
-            found=True,
-            mem_address=_strip_mem_address(text=mtch["mem_address"]))
+        found = True
+        mem_address = mtch["mem_address"]
+
+    # Sanity check to see if it didn't parse garbage
+    # dep_path should have at least a `/` somewhere in the filepath
+    if dep_path and os.sep not in str(dep_path):
+        raise RuntimeError("Unexpected library path: {}".format(dep_path))
+
+    return Dependency(soname=soname, path=dep_path, found=found, mem_address=mem_address)
 
 
 @icontract.require(lambda path: path.is_file())

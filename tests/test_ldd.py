@@ -151,7 +151,7 @@ class TestParseOutputWithoutUnused(unittest.TestCase):
             run_err = err
 
         self.assertIsNotNone(run_err)
-        self.assertTrue(str(run_err).startswith("Unexpected mem address."))
+        self.assertTrue(str(run_err).startswith("Unexpected library path:"))
 
     def test_parse_non_indented_line(self):
         """Lines without leading indentation, at this point in processing, are
