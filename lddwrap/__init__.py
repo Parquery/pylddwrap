@@ -88,8 +88,8 @@ class Dependency:
                                         ("unused", self.unused)])
 
 
-_LDD_ARROW_OUTPUT_RE = re.compile(r"(?P<soname>.+) => (?P<dep_path>.*) \(?(?P<mem_address>\w*)\)?")
-_LDD_NON_ARROW_OUTPUT_RE = re.compile(r"(?P<dep_path>.*) \(?(?P<mem_address>\w*)\)?")
+_LDD_ARROW_OUTPUT_RE = re.compile(r"(?P<soname>.+)\s=>\s(?P<dep_path>.*)\s\(?(?P<mem_address>\w*)\)?")
+_LDD_NON_ARROW_OUTPUT_RE = re.compile(r"(?P<dep_path>.+)\s\(?(?P<mem_address>\w*)\)?")
 
 
 def _parse_line(line: str) -> Optional[Dependency]:
@@ -100,8 +100,6 @@ def _parse_line(line: str) -> Optional[Dependency]:
     :return: dependency or None if line was empty
 
     """
-    found = not 'not found' in line
-    parts = [part.strip() for part in line.split(' ')]
     # pylint: disable=line-too-long
     # There are two types of outputs for a dependency, with or without soname.
     # The VDSO is a special case (see https://man7.org/linux/man-pages/man7/vdso.7.html)
@@ -114,6 +112,7 @@ def _parse_line(line: str) -> Optional[Dependency]:
     # with soname but not found: 'libboost_program_options.so.1.62.0 => not found'
     # with soname but without rpath: 'linux-vdso.so.1 =>  (0x00007ffd7c7fd000)'
     # pylint: enable=line-too-long
+    found = not 'not found' in line
     soname = None
     dep_path = None
     mem_address = None
@@ -130,7 +129,7 @@ def _parse_line(line: str) -> Optional[Dependency]:
             if mtch["mem_address"]:
                 mem_address = mtch["mem_address"]
         else:
-            if "/" in parts[0]:
+            if os.sep in mtch["soname"]:
                 # This is a special case where the dep_path comes before the arrow
                 # and we have no soname
                 dep_path = pathlib.Path(mtch["soname"])
@@ -155,7 +154,7 @@ def _parse_line(line: str) -> Optional[Dependency]:
         found = True
         mem_address = mtch["mem_address"]
 
-    # Sanity check to see if it didn't parse garbage
+    # Sanity check to see if it didn't parse garbage:
     # dep_path should have at least a `/` somewhere in the filepath
     if dep_path and os.sep not in str(dep_path):
         raise RuntimeError("Unexpected library path: {}".format(dep_path))
