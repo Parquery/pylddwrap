@@ -88,8 +88,10 @@ class Dependency:
                                         ("unused", self.unused)])
 
 
-_LDD_ARROW_OUTPUT_RE = re.compile(r"(?P<soname>.+)\s=>\s(?P<dep_path>.*)\s\(?(?P<mem_address>\w*)\)?")
-_LDD_NON_ARROW_OUTPUT_RE = re.compile(r"(?P<dep_path>.+)\s\(?(?P<mem_address>\w*)\)?")
+_LDD_ARROW_OUTPUT_RE = re.compile(
+    r"(?P<soname>.+)\s=>\s(?P<dep_path>.*)\s\(?(?P<mem_address>\w*)\)?")
+_LDD_NON_ARROW_OUTPUT_RE = re.compile(
+    r"(?P<dep_path>.+)\s\(?(?P<mem_address>\w*)\)?")
 
 
 def _parse_line(line: str) -> Optional[Dependency]:
@@ -119,9 +121,9 @@ def _parse_line(line: str) -> Optional[Dependency]:
     if '=>' in line:
         mtch = _LDD_ARROW_OUTPUT_RE.match(line)
         if not mtch:
-            raise RuntimeError(("Unexpected ldd output. Expect a regex match {}, "
-                                "but got: {!r}").format(_LDD_ARROW_OUTPUT_RE.pattern,
-                                                        line))
+            raise RuntimeError(
+                ("Unexpected ldd output. Expect a regex match {}, "
+                 "but got: {!r}").format(_LDD_ARROW_OUTPUT_RE.pattern, line))
         if found:
             soname = mtch["soname"]
             if mtch["dep_path"]:
@@ -142,9 +144,10 @@ def _parse_line(line: str) -> Optional[Dependency]:
 
         mtch = _LDD_NON_ARROW_OUTPUT_RE.match(line)
         if not mtch:
-            raise RuntimeError(("Unexpected ldd output. Expect a regex match {}, "
-                                "but got: {!r}").format(_LDD_NON_ARROW_OUTPUT_RE.pattern,
-                                                        line))
+            raise RuntimeError(
+                ("Unexpected ldd output. Expect a regex match {}, "
+                 "but got: {!r}").format(_LDD_NON_ARROW_OUTPUT_RE.pattern,
+                                         line))
         # Special case for linux-vdso
         if mtch["dep_path"].startswith("linux-vdso"):
             soname = mtch["dep_path"]
@@ -159,7 +162,8 @@ def _parse_line(line: str) -> Optional[Dependency]:
     if dep_path and os.sep not in str(dep_path):
         raise RuntimeError("Unexpected library path: {}".format(dep_path))
 
-    return Dependency(soname=soname, path=dep_path, found=found, mem_address=mem_address)
+    return Dependency(
+        soname=soname, path=dep_path, found=found, mem_address=mem_address)
 
 
 @icontract.require(lambda path: path.is_file())
