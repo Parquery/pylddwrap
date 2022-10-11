@@ -62,7 +62,7 @@ class TestParseOutputWithoutUnused(unittest.TestCase):
             "../build/debug/libextstr.so => not found",
             "/home/user/lib/liblmdb.so => not found",
             "/home/u s e r/lib/liblmdb.so => not found",
-            "UnityPlayer.so => /home/user/games/q u d/./UnityPlayer.so"
+            "UnityPlayer.so => /home/user/games/q u d/./UnityPlayer.so "
             "(0x00007f90f290f000)"
         ]
         # yapf: enable
