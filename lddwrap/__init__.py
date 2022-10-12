@@ -94,6 +94,7 @@ _LDD_NON_ARROW_OUTPUT_RE = re.compile(
     r"(?P<dep_path>.+)\s\(?(?P<mem_address>\w*)\)?")
 
 
+# pylint: disable=too-many-branches
 def _parse_line(line: str) -> Optional[Dependency]:
     """
     Parse single line of ldd output.
@@ -132,8 +133,8 @@ def _parse_line(line: str) -> Optional[Dependency]:
                 mem_address = mtch["mem_address"]
         else:
             if os.sep in mtch["soname"]:
-                # This is a special case where the dep_path comes before the arrow
-                # and we have no soname
+                # This is a special case where the dep_path comes before the
+                # arrow and we have no soname
                 dep_path = pathlib.Path(mtch["soname"])
             else:
                 soname = mtch["soname"]
