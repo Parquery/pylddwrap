@@ -122,9 +122,9 @@ def _parse_line(line: str) -> Optional[Dependency]:
     if '=>' in line:
         mtch = _LDD_ARROW_OUTPUT_RE.match(line)
         if not mtch:
-            raise RuntimeError(
-                ("Unexpected ldd output. Expect a regex match {}, "
-                 "but got: {!r}").format(_LDD_ARROW_OUTPUT_RE.pattern, line))
+            raise RuntimeError(("Unexpected ldd output. Expected to match {}, "
+                                "but got: {!r}").format(
+                                    _LDD_ARROW_OUTPUT_RE.pattern, line))
         if found:
             soname = mtch["soname"]
             if mtch["dep_path"]:
@@ -145,10 +145,9 @@ def _parse_line(line: str) -> Optional[Dependency]:
 
         mtch = _LDD_NON_ARROW_OUTPUT_RE.match(line)
         if not mtch:
-            raise RuntimeError(
-                ("Unexpected ldd output. Expect a regex match {}, "
-                 "but got: {!r}").format(_LDD_NON_ARROW_OUTPUT_RE.pattern,
-                                         line))
+            raise RuntimeError(("Unexpected ldd output. Expected to match {}, "
+                                "but got: {!r}").format(
+                                    _LDD_NON_ARROW_OUTPUT_RE.pattern, line))
         # Special case for linux-vdso
         if mtch["dep_path"].startswith("linux-vdso"):
             soname = mtch["dep_path"]
