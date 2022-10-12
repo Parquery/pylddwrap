@@ -2,6 +2,7 @@
 """Test lddwrap."""
 # pylint: disable=missing-docstring,too-many-public-methods
 import pathlib
+import shutil
 import tempfile
 import unittest
 from typing import Any, List, Optional
@@ -9,6 +10,9 @@ from typing import Any, List, Optional
 import lddwrap
 
 import tests
+
+DIR = shutil.which("dir") or "/bin/dir"
+PWD = shutil.which("pwd") or "/bin/pwd"
 
 
 class DependencyDiff:
@@ -187,7 +191,7 @@ class TestAgainstMockLdd(unittest.TestCase):
                 ]),
                 out_unused=''):
             deps = lddwrap.list_dependencies(
-                path=pathlib.Path('/bin/pwd'), unused=False)
+                path=pathlib.Path(PWD), unused=False)
 
             expected_deps = [
                 lddwrap.Dependency(
@@ -236,7 +240,7 @@ class TestAgainstMockLdd(unittest.TestCase):
                 out_unused=''):
             # pylint: enable=line-too-long
             deps = lddwrap.list_dependencies(
-                path=pathlib.Path('/bin/dir'), unused=False)
+                path=pathlib.Path(DIR), unused=False)
 
             expected_deps = [
                 lddwrap.Dependency(
@@ -307,7 +311,7 @@ class TestAgainstMockLdd(unittest.TestCase):
                 out_unused=''):
             # pylint: enable=line-too-long
             deps = lddwrap.list_dependencies(
-                path=pathlib.Path("/bin/dir"), unused=True)
+                path=pathlib.Path(DIR), unused=True)
 
             unused = [dep for dep in deps if dep.unused]
             self.assertListEqual([], unused)
@@ -329,7 +333,7 @@ class TestAgainstMockLdd(unittest.TestCase):
         ):
             # pylint: enable=line-too-long
             deps = lddwrap.list_dependencies(
-                path=pathlib.Path("/bin/dir"), unused=True)
+                path=pathlib.Path(DIR), unused=True)
 
             unused = [dep for dep in deps if dep.unused]
 
@@ -389,7 +393,7 @@ class TestSorting(unittest.TestCase):
 
             for attr in lddwrap.DEPENDENCY_ATTRIBUTES:
                 deps = lddwrap.list_dependencies(
-                    path=pathlib.Path("/bin/dir"), unused=True)
+                    path=pathlib.Path(DIR), unused=True)
 
                 # pylint: disable=protected-access
                 lddwrap._sort_dependencies_in_place(deps=deps, sort_by=attr)
