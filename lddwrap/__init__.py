@@ -191,7 +191,9 @@ def list_dependencies(path: pathlib.Path,
     """
     Retrieve a list of dependencies of the given binary.
 
-    >>> path = pathlib.Path("/bin/ls")
+    >>> import shutil
+    >>> ls = shutil.which("ls")
+    >>> path = pathlib.Path(ls)
     >>> deps = list_dependencies(path=path)
     >>> deps[0].soname
     'linux-vdso.so.1'
