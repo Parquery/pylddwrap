@@ -7,6 +7,7 @@ https://github.com/pypa/sampleproject
 import os
 
 import pylddwrap_meta
+# pylint: disable=wrong-import-order
 from setuptools import find_packages, setup
 
 # pylint: disable=redefined-builtin
@@ -51,7 +52,7 @@ setup(
         'dev': [
             # yapf: disable
             'mypy==0.790; implementation_name != "pypy"',
-            'pylint==2.6.0',
+            'pylint==2.7.1',
             'yapf==0.24.0',
             'tox>=3.0.0',
             'coverage>=5.5.0,<6',
