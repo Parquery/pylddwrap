@@ -60,7 +60,10 @@ class TestParseOutputWithoutUnused(unittest.TestCase):
             "(0x00007f4b78462000)",
             "libz.so.1 => not found",
             "../build/debug/libextstr.so => not found",
-            "/home/user/lib/liblmdb.so => not found"
+            "/home/user/lib/liblmdb.so => not found",
+            "/home/u s e r/lib/liblmdb.so => not found",
+            "UnityPlayer.so => /home/user/games/q u d/./UnityPlayer.so "
+            "(0x00007f90f290f000)"
         ]
         # yapf: enable
 
@@ -114,7 +117,19 @@ class TestParseOutputWithoutUnused(unittest.TestCase):
                 path=pathlib.Path("/home/user/lib/liblmdb.so"),
                 found=False,
                 mem_address=None,
-                unused=None)
+                unused=None),
+            lddwrap.Dependency(
+                soname=None,
+                path=pathlib.Path("/home/u s e r/lib/liblmdb.so"),
+                found=False,
+                mem_address=None,
+                unused=None),
+            lddwrap.Dependency(
+                soname="UnityPlayer.so",
+                path=pathlib.Path("/home/user/games/q u d/./UnityPlayer.so"),
+                found=True,
+                mem_address="0x00007f90f290f000",
+                unused=None),
         ]
 
         for i, line in enumerate(lines):
@@ -137,9 +152,7 @@ class TestParseOutputWithoutUnused(unittest.TestCase):
             run_err = err
 
         self.assertIsNotNone(run_err)
-        self.assertEqual(
-            'Expected 2 parts in the line but found {}: {}'.format(
-                line.count(' ') + 1, line), str(run_err))
+        self.assertTrue(str(run_err).startswith("Unexpected library path:"))
 
     def test_parse_non_indented_line(self):
         """Lines without leading indentation, at this point in processing, are
