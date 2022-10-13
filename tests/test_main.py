@@ -4,6 +4,7 @@
 import io
 import json
 import pathlib
+import shutil
 import textwrap
 import unittest
 from typing import List, TextIO, cast
@@ -15,16 +16,18 @@ import pylddwrap_meta
 # pylint: disable=missing-docstring
 import tests
 
+LS = shutil.which("ls") or "/bin/ls"
+PWD = shutil.which("pwd") or "/bin/pwd"
+
 
 class TestParseArgs(unittest.TestCase):
     def test_single_path(self):
-        args = lddwrap.main.parse_args(
-            sys_argv=['some-executable.py', '/bin/ls'])
-        self.assertEqual(pathlib.Path('/bin/ls'), args.path)
+        args = lddwrap.main.parse_args(sys_argv=['some-executable.py', LS])
+        self.assertEqual(pathlib.Path(LS), args.path)
 
     def test_format(self):
         args = lddwrap.main.parse_args(
-            sys_argv=['some-executable.py', '/bin/ls', "--format", "json"])
+            sys_argv=['some-executable.py', LS, "--format", "json"])
         self.assertEqual("json", args.format)
 
 
@@ -116,8 +119,7 @@ class TestMain(unittest.TestCase):
         buf = io.StringIO()
         stream = cast(TextIO, buf)
 
-        args = lddwrap.main.parse_args(
-            sys_argv=["some-executable.py", "/bin/pwd"])
+        args = lddwrap.main.parse_args(sys_argv=["some-executable.py", PWD])
 
         with tests.MockLdd(
                 out="\n".join([
@@ -148,7 +150,7 @@ class TestMain(unittest.TestCase):
         stream = cast(TextIO, buf)
 
         args = lddwrap.main.parse_args(
-            sys_argv=["some-executable.py", "/bin/pwd", "--sorted"])
+            sys_argv=["some-executable.py", PWD, "--sorted"])
 
         with tests.MockLdd(
                 out="\n".join([
@@ -179,7 +181,7 @@ class TestMain(unittest.TestCase):
         stream = cast(TextIO, buf)
 
         args = lddwrap.main.parse_args(
-            sys_argv=["some-executable.py", "/bin/pwd", "--sorted", "path"])
+            sys_argv=["some-executable.py", PWD, "--sorted", "path"])
 
         with tests.MockLdd(
                 out="\n".join([
