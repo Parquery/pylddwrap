@@ -11,6 +11,9 @@ import lddwrap
 
 import tests
 
+# Some distros like NixOS does not have binaries on /bin.
+# Instead of hardcoding them, try to get them from PATH
+# using shutil.which function.
 DIR = shutil.which("dir") or "/bin/dir"
 PWD = shutil.which("pwd") or "/bin/pwd"
 
