@@ -1,3 +1,7 @@
+1.2.2
+=====
+* Added support for paths with spaces (#26)
+
 1.2.1
 =====
 * Removed support for Python 3.5 (#23)
